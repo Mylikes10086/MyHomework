@@ -22,7 +22,7 @@ public class TestPlayer extends Creature /*implements Runnable*/{
         this.setImage("player.png");
     }
 
-    public void move(double x, double y) {
+    public void move(int x, int y) {
         double nx = this.x() + x;
         double ny = this.y() + y;
         this.setX(nx);
@@ -37,9 +37,7 @@ public class TestPlayer extends Creature /*implements Runnable*/{
                     this.move(rand.nextInt(20), rand.nextInt(20));
                     TimeUnit.MILLISECONDS.sleep(rand.nextInt(1000) +500);
                     //Thread.sleep(rand.nextInt(1000) + 1000);
-                    this.field.doRefresh();
                     this.field.repaint();
-                    this.field.hasRefreshed();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

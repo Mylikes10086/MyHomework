@@ -15,7 +15,10 @@ public abstract class Thing2D {
         this.y = y;
     }
 
-    public Thing2D(){}
+    public Thing2D(){
+        this.x = 0;
+        this.y = 0;
+    }
 
     public Image getImage() {
         return this.image;

@@ -26,4 +26,7 @@ public class GameUtil {
         return bi;
     }
 
+    public static final int SCALE = 80;
+    public static final int OFFEST = 40;
+
 }

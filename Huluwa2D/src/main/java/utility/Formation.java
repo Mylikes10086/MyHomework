@@ -2,6 +2,7 @@ package utility;
 
 import creatures.Creature;
 import scenes.Field;
+import scenes.Grid;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -13,16 +14,16 @@ public class Formation {
         this.field = field;
     }
 
-    public void shexingzhen(ArrayList<Creature> creatures, double x, double y) {
-        double nx = x ;
-        double ny = y ;
+
+
+    public void shexingzhen(ArrayList<Creature> creatures, int x, int y) {
+        int nx = x ;
+        int ny = y ;
         for (Creature c :
                  creatures) {
-            int offset = c.getImage().getHeight(null);
-            ny += offset+5;
-            nx += offset+5;
-            c.setX(nx);
-            c.setY(ny);
+            c.setGrid(field.getGrid(nx, ny));
+            field.getGrid(nx, ny).setHolder(c);
+            ny += 1;
             System.out.println("huluwa");
         }
     }

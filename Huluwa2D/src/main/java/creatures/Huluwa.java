@@ -1,95 +1,91 @@
 package creatures;
 
 import scenes.Field;
+import scenes.Grid;
+import utility.GameUtil;
 
-import java.awt.*;
 import java.util.Random;
 
 public class Huluwa extends Creature{
     private SENIORITY seniority;
     private COLOUR colour;
     private Field field;
-    private int speed = 30;
+    private Grid grid;
+    private int speed = 80;
 
     public Huluwa(int nseniority,Field field) {
         this.isWho(nseniority);
         this.field = field;
+        this.grid = null;
     }
 
-    public Huluwa(SENIORITY seniority, COLOUR colour,Field field) {
+    /*public Huluwa(SENIORITY seniority, COLOUR colour,Field field) {
         this.seniority = seniority;
         this.colour = colour;
         this.field = field;
-    }
+        this.grid = null;
+    }*/
 
-    public Huluwa(double x,double y,SENIORITY seniority, COLOUR colour,Field field) {
+    public Huluwa(double x,double y,int nseniority,Field field) {
+        this(nseniority, field);
         this.setXY(x, y);
-        this.seniority = seniority;
-        this.colour = colour;
-        this.field = field;
     }
 
     public Huluwa() {}
-
 
     public void setXY(double x,double y) {//设置坐标
         this.x = x;
         this.y = y;
     }
 
-
     public void run() {//线程运行
             try {
                 while (!Thread.interrupted()) {//每次线程刷新都会运动
                     Random rand = new Random();
-                    this.move(rand.nextInt(10), rand.nextInt(10));
-                    System.out.println("HuluwaMoving");
+                    this.move(1,0);
+                    System.out.println("Huluwa"+this.seniority.name()+"Moving");
                     Thread.sleep(rand.nextInt(1000) + 1000);
-                    this.field.doRefresh();
                     this.field.repaint();
-                    this.field.hasRefreshed();
-
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
     }
 
-    public void move(double x, double y) {//葫芦娃移动
-        double nx = this.x() + x;
-        double ny = this.y() + y;
-        this.setX(nx);
-        this.setY(ny);
+    public void move(int xstep, int ystep) {//葫芦娃移动
+        Grid tgrid = this.grid;
+        this.setGrid(new Grid(xstep,ystep,this.field));
+        tgrid.setNull();
     }
 
     public void isWho(int nseniority) {
         switch (nseniority) {
             case 1:
-                this.seniority = SENIORITY.大;
+                this.seniority = SENIORITY.ONE;
                 this.colour = COLOUR.RED;
                 break;
             case 2:
-                this.seniority = SENIORITY.二;
+                this.seniority = SENIORITY.TWO;
                 this.colour = COLOUR.ORANGE;
                 break;
             case 3:
-                this.seniority = SENIORITY.三;
+                this.seniority = SENIORITY.THREE;
                 this.colour = COLOUR.YELLOW;
                 break;
             case 4:
-                this.seniority = SENIORITY.四;
+                this.seniority = SENIORITY.FOUR;
                 this.colour = COLOUR.GREEN;
                 break;
             case 5:
-                this.seniority = SENIORITY.五;
+                this.seniority = SENIORITY.FIVE;
                 this.colour = COLOUR.BLUE;
                 break;
             case 6:
-                this.seniority = SENIORITY.六;
+                this.seniority = SENIORITY.SIX;
                 this.colour = COLOUR.INDIGO;
                 break;
             case 7:
-                this.seniority = SENIORITY.七;
+                this.seniority = SENIORITY.SEVEN;
                 this.colour = COLOUR.VIOLET;
                 break;
             default :
@@ -106,17 +102,15 @@ public class Huluwa extends Creature{
     }
 
     public enum SENIORITY {
-        大(1),二(2),三(3),四(4),五(5),六(6),七(7);
+        ONE(1),TWO(2),THREE(3),FOUR(4),FIVE(5),SIX(6),SEVEN(7);
 
         private int sNum=0;
 
-        private SENIORITY(int _sNum) {
+        SENIORITY(int _sNum) {
             this.sNum=_sNum;
         }
 
-        public int toNumber() {
-            return this.sNum;
-        }
+        //public int toNumber() {return this.sNum;}
 
     }
 
@@ -125,13 +119,11 @@ public class Huluwa extends Creature{
 
         private int cNum=0;
 
-        private COLOUR(int _cNum) {
+        COLOUR(int _cNum) {
             this.cNum=_cNum;
         }
 
-        public int toNumber() {
-            return this.cNum;
-        }
+        //public int toNumber() {return this.cNum;}
 
     }
 

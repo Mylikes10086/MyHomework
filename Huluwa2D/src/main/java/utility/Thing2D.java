@@ -15,17 +15,14 @@ public abstract class Thing2D {
         this.y = y;
     }
 
-    public Thing2D(){
-        this.x = 0;
-        this.y = 0;
-    }
+    public Thing2D(){}
 
     public Image getImage() {
         return this.image;
     }
 
-    public void setImage(Image img) {
-        image = img;
+    public void setImage(String imgPath) {
+        image = GameUtil.getImage(imgPath);
     }
 
     public double x() {

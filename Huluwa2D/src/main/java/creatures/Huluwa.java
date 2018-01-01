@@ -1,37 +1,32 @@
 package creatures;
 
-import scenes.Field;
-import scenes.Grid;
-import utility.GameUtil;
+import scenes.BattleField;
 
 import java.util.Random;
 
 public class Huluwa extends Creature{
     private SENIORITY seniority;
     private COLOUR colour;
-    private Field field;
-    private Grid grid;
+    private BattleField field;
     private int speed = 80;
 
-    public Huluwa(int nseniority,Field field) {
+    public Huluwa(int nseniority, BattleField field) {
+        super(field);
         this.isWho(nseniority);
-        this.field = field;
-        this.grid = null;
+        this.inti_HP = 3;
+        this.current_HP = 3;
+        this.damage = 5;
+        setImage("huluboys/"+nseniority+"_a.png","huluboys/"+nseniority+"_d.png");
+
     }
 
-    /*public Huluwa(SENIORITY seniority, COLOUR colour,Field field) {
-        this.seniority = seniority;
-        this.colour = colour;
-        this.field = field;
-        this.grid = null;
-    }*/
+    public Huluwa() {super();}
 
-    public Huluwa(double x,double y,int nseniority,Field field) {
-        this(nseniority, field);
-        this.setXY(x, y);
+    @Override
+    public int attack() {
+        Random random = new Random();
+        return damage + random.nextInt(10);
     }
-
-    public Huluwa() {}
 
     public void setXY(double x,double y) {//设置坐标
         this.x = x;
@@ -39,24 +34,88 @@ public class Huluwa extends Creature{
     }
 
     public void run() {//线程运行
-            try {
-                while (!Thread.interrupted()) {//每次线程刷新都会运动
-                    Random rand = new Random();
-                    this.move(1,0);
-                    System.out.println("Huluwa"+this.seniority.name()+"Moving");
-                    Thread.sleep(rand.nextInt(1000) + 1000);
-                    this.field.repaint();
+
+        /*try {
+            while (!Thread.interrupted()) {//每次线程刷新都会运动
+                if (this.isDead()) {
+                    this.grid.setNull();
+                    return;
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                //战斗已经结束
+                if(this.field.battleFinished()) return;
+                //寻找敌人
+                Creature creature = this.getCloestEnemy();
+                if (creature == this) return;
+
+                if(this.grid.isNearBy( creature.getGrid() ) ) {
+                    synchronized (this) {
+                        if (creature.isDead()) continue;//该位置敌人已死
+                        synchronized (creature) {
+                            this.field.battleStart(this, creature);
+                            if(creature.isDead()){
+                                System.out.println(this.seniority.name()+"killed");
+                            }
+                            if (this.isDead()) {
+                                this.grid.setNull();
+                                System.out.println(this.seniority.name()+"is killed"+ creature.current_HP);
+                                return;
+                            } else {
+                                creature = this.getCloestEnemy();
+                            }
+                        }
+                    }
+                }
+                this.moveTo(creature.getGrid());
+                System.out.println(this.getClass().toString()+"Moving");
+                Thread.sleep(1000);
+                this.field.repaint();
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+        try {
+            while (!Thread.interrupted()) {//每次线程刷新都会运动
+                //move(-1,0);
+                if (this.isDead()) {
+                    this.grid.setNull();
+                    return;
+                }
+                //战斗已经结束
+                if(this.field.battleFinished()) return;
+                //寻找敌人
+                Creature creature = this.getCloestEnemy();
+                if (creature == this) return;
+
+                if(this.grid.isNearBy( creature.getGrid() ) ) {
+                    synchronized (this) {
+                        if (creature.isDead()) continue;//该位置敌人已死
+                        synchronized (creature) {
+                            this.field.battleStart(this, creature);
+                            if(creature.isDead()){
+                                System.out.println(this.seniority.toString()+"killed");
+                            }
+                            if (this.isDead()) {
+                                this.grid.setNull();
+                                System.out.println(this.seniority.toString()+"is killed"+ creature.current_HP);
+                                return;
+                            } else {
+                                creature = this.getCloestEnemy();
+                            }
+                        }
+                    }
+                }
+                this.moveTo(creature.getGrid());
+                System.out.println(this.getClass().toString()+"Moving");
+                Thread.sleep(1000);
+                this.field.repaint();
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
-    public void move(int xstep, int ystep) {//葫芦娃移动
-        Grid tgrid = this.grid;
-        this.setGrid(new Grid(xstep,ystep,this.field));
-        tgrid.setNull();
-    }
 
     public void isWho(int nseniority) {
         switch (nseniority) {

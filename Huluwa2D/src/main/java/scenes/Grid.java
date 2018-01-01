@@ -1,32 +1,26 @@
 package scenes;
 
-import creatures.Creature;
-import utility.GameUtil;
+import utility.Thing2D;
 
 import java.awt.*;
 
-public class Grid<T extends Creature> {
-    private int SCALE = GameUtil.SCALE;
-    private int OFFSET = GameUtil.OFFEST;
-    private int x=0,y=0;//格子的相对位置
-    private boolean occupied = false;
-    private T holder = null;
-    private Field field;
+public class Grid {
+    private int x,y;
+    private  boolean occupied;
+    private Thing2D holder;
+    private BattleField field;
 
-    public Grid(int x, int y,Field field) {
+    public Grid() {
+        this.x =0;
+        this.y =0;
+        this.occupied=false;
+        this.holder= null;
+
+    }
+    public Grid(int x, int y){
+        this();
         this.x = x;
         this.y = y;
-        this.field = field;
-    }
-
-    public Grid(int x, int y, T holder,Field field) {
-        this(x,y,field);
-        this.holder = holder;
-        if (holder==null) {
-            this.occupied = false;
-        } else {
-            this.occupied = true;
-        }
     }
 
     public boolean isOccupied() {
@@ -41,38 +35,37 @@ public class Grid<T extends Creature> {
         this.occupied = false;
     }
 
-    public T getHolder() {
-        return holder;
-    }
+    public int getX() {return x;}
 
-    public void setHolder(T holder) {
+    public int getY() { return y; }
+
+    public void setHolder(Thing2D holder) {
         if (holder!=null) {
-            this.holder = holder;
-            this.setOccupied();}
+        this.holder = holder;
+        this.setOccupied();}
     }
 
-    public void setNull() {
-        this.holder = null;
+    public void setNull(){
+        this.holder=null;
         this.cleanOccupied();
     }
 
-    public void setXY(int x,int y) {
-        this.x = x;
-        this.y = y;
+    public Thing2D getHolder() {
+        return holder;
     }
 
     public void drawGrid(Graphics g) {
-        g.drawRect(x*SCALE+OFFSET,y*SCALE+OFFSET,SCALE,SCALE);
-        if (holder != null) {
-            g.drawImage(holder.getImage(),x*SCALE+OFFSET,y*SCALE+OFFSET, field);
+        g.drawRect(x*50,y*50,50,50);
+        if (isOccupied()) {
+            System.out.println("high");
+            g.drawImage(holder.getImage(),x*50,y*50,50,50,field);
         }
     }
 
-    public int getX() {
-        return x;
+    public boolean isNearBy(Grid grid){
+        if(Math.abs(this.x - grid.getX())+Math.abs(this.y - grid.getY()) == 1) return true;
+        return false;
     }
 
-    public int getY() {
-        return y;
-    }
+
 }

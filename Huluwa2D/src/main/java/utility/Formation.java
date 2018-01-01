@@ -1,30 +1,46 @@
 package utility;
 
 import creatures.Creature;
-import scenes.Field;
+import scenes.BattleField;
 import scenes.Grid;
 
-import java.awt.*;
 import java.util.ArrayList;
 
-public class Formation {
-    private Field field;
+public abstract class Formation {
+    protected int width=9;
+    protected int height=9;
 
-    public Formation(Field field) {
-        this.field = field;
+    protected Grid start;
+    protected ArrayList<Creature> creatures;
+
+    public Formation(int width,int height) {
+        this.width = width;
+        this.height = height;
+        this.creatures =  new ArrayList<Creature>();
+        this.start = new Grid(0,0);
     }
 
+    public Formation() {}
 
-
-    public void shexingzhen(ArrayList<Creature> creatures, int x, int y) {
-        int nx = x ;
-        int ny = y ;
-        for (Creature c :
-                 creatures) {
-            c.setGrid(field.getGrid(nx, ny));
-            field.getGrid(nx, ny).setHolder(c);
-            ny += 1;
-            System.out.println("huluwa");
-        }
+    public Grid getStart() {
+        return start;
     }
+
+    public ArrayList<Creature> getCreatures() {
+        return creatures;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setStart(Grid start) {
+        this.start = start;
+    }
+
+    public  abstract void reset();
 }

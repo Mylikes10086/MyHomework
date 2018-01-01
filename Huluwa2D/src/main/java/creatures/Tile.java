@@ -15,8 +15,8 @@ public class Tile extends Thing2D{
 
             /*URL loc = this.getClass().getClassLoader().getResource("tile.png");
             ImageIcon iia = new ImageIcon(loc);
-            Image image = iia.getImage();
-            this.setImage(image);*/
+            Image image_alive = iia.getImage();
+            this.setImage(image_alive);*/
         this.setImage("tile.png");
     }
 

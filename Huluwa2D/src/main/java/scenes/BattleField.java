@@ -28,7 +28,7 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
     private boolean completed = false;
 
     public BattleField(int width,int height) {
-        addKeyListener(new TAdapter());
+        //addKeyListener(new TAdapter());
         setFocusable(true);
         initField(width,height);
     }
@@ -75,7 +75,8 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
         }
         System.out.println("B_count"+B_count);
         System.out.println("M_count"+M_count);
-        if(B_count == 0 || M_count == 0) return true;
+        if(B_count == 0 || M_count == 0) {
+            return true;}
         return false;
     }
 
@@ -95,12 +96,16 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
     }
 
     public void drawField(Graphics g) {
-
         g.drawImage(GameUtil.getImage("bg.jpg"),0, 0,this.getWidth(),this.getHeight(),this);
+        g.drawString("按 空格 开始，按 L 重置",900,200);
         for (int i=0;i<w;i++) {
             for(int j=0;j<h;j++) {
                 grids[i][j].drawGrid(g);
             }
+        }
+
+        if(battleFinished()) {
+            g.drawString("战斗结束",500,200);
         }
 
     }
@@ -211,43 +216,6 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
         return false;
     }
 
-    class TAdapter extends KeyAdapter {
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-
-            if (completed) {
-                return;
-            }
-
-            int key = e.getKeyCode();
-            if (key == KeyEvent.VK_SPACE) {
-                //InitUI();
-                ExecutorService exec = Executors.newCachedThreadPool();
-                for (Creature creature : creatures) {
-                    exec.execute(creature);
-                }
-                /*java.util.Timer timer = new Timer();
-                timer.schedule(new TimerTask() {
-                    @Override
-                    public void run() {
-                        repaint();
-                    }
-
-                }, 0, 500);*/
-
-
-
-
-            } else if (key == KeyEvent.VK_R) {
-                reload();
-            } else if(key == KeyEvent.VK_P){
-
-            }
-
-            repaint();
-        }
-    }
 
 
 }

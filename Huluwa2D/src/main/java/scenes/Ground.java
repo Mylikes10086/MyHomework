@@ -8,8 +8,6 @@ import utility.TooCrowdedException;
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,7 +21,6 @@ public final class Ground extends JFrame{
     private Xiezi xiezi;
     private Grandpa yeye;
     private BattleField field = new BattleField(15,10);
-    private boolean completed = false;
 
     public Ground() {
         loadBattle();
@@ -33,9 +30,11 @@ public final class Ground extends JFrame{
 
     public void InitUI() {
         field.setOpaque(true);
+        field.addKeyListener(new MyAdapter());
         add(field);
 
 
+        //addKeyListener(new MyAdapter());
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200,800);
         setLocationRelativeTo(null);
@@ -85,11 +84,23 @@ public final class Ground extends JFrame{
         
     }
 
+    class MyAdapter extends KeyAdapter {
+        @Override
+        public void keyPressed(KeyEvent e) {
+            int key = e.getKeyCode();
+            if (key == KeyEvent.VK_SPACE) {
+                //InitUI();
+                ExecutorService exec = Executors.newCachedThreadPool();
+                for (Creature creature : field.getCreatures()) {
+                    exec.execute(creature);
+                }
 
-    /*public static void main(String[] args) {
-        Ground ground = new Ground();
-        ground.setVisible(true);
-    }*/
+            } else if (key == KeyEvent.VK_R) {
+                reload();
+                repaint();
+            }
+        }
+    }
 
 
 

@@ -4,8 +4,8 @@ import scenes.Grid;
 
 public class Grandpa extends Creature {
 
-    public int attack() {
-        return 0;
+    public void attack(Creature c) {
+        c.wounded(damage);
     }
 
     public void run() {
@@ -17,9 +17,9 @@ public class Grandpa extends Creature {
                     return;
                 }
                 //战斗已经结束
-                //if(this.field.battleFinished()) return;
+                if(this.field.battleFinished()) return;
                 //寻找敌人
-                Creature creature = this.getCloestEnemy();
+                Creature creature = this.getClosestEnemy();
                 if (creature == this) return;
 
                 if(this.grid.isNearBy( creature.getGrid() ) ) {
@@ -35,19 +35,28 @@ public class Grandpa extends Creature {
                                 System.out.println("yeye is killed"+ creature.current_HP);
                                 return;
                             } else {
-                                creature = this.getCloestEnemy();
+                                creature = this.getClosestEnemy();
                             }
                         }
                     }
                 }
                 this.moveTo(creature.getGrid());
-                System.out.println(this.getClass().toString()+"Moving");
+                //System.out.println(this.getClass().toString()+"Moving");
                 Thread.sleep(1000);
                 this.field.repaint();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public Grid findAliveBoys() {
+        for(Creature creature:field.getCreatures()){
+            if(creature instanceof Huluwa && !creature.isDead()){
+                return creature.getGrid();
+            }
+        }
+        return field.getGrids()[0][0];
     }
 
     public Grandpa() {

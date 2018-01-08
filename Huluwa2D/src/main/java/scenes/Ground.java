@@ -2,11 +2,16 @@ package scenes;
 
 import creatures.*;
 import utility.CraneFormation;
-import utility.Formation;
 import utility.SnakeFormation;
 import utility.TooCrowdedException;
 
 import javax.swing.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class Ground extends JFrame{
 
@@ -18,15 +23,18 @@ public final class Ground extends JFrame{
     private Xiezi xiezi;
     private Grandpa yeye;
     private BattleField field = new BattleField(15,10);
+    private boolean completed = false;
 
     public Ground() {
         loadBattle();
+
         InitUI();
     }
 
     public void InitUI() {
         field.setOpaque(true);
         add(field);
+
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1200,800);
@@ -50,30 +58,41 @@ public final class Ground extends JFrame{
             mt[i].setField(this.field);
         }
 
-
-        //field.getCreatures().add(shej);
-        //field.getCreatures().add(boys[1]);
-
         sf = new SnakeFormation(boys);
         cf = new CraneFormation(mt);
+        cf.reset();
+        sf.reset();
+        shej.reborn();
+        xiezi.reborn();
+        yeye.reborn();
 
         try {
-            //field.layoutFormation(sf,new Grid(4,2));
-            //field.layoutFormation(cf,new Grid(8,2));
+            field.layoutFormation(sf,new Grid(4,2));
+            field.layoutFormation(cf,new Grid(8,2));
 
             field.layoutCreature(yeye,new Grid(1,5));
             field.layoutCreature(shej,new Grid(13,5));
+            //System.out.println(field.getCreatures().toString());
         } catch (TooCrowdedException e) {
             e.printStackTrace();
         }
         //formation.shexingzhen(boys,3,1);
         //formation.shexingzhen(mt,11,1);
     }
+    public void reload() {
+        //InitUI();
+        loadBattle();
+        
+    }
 
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         Ground ground = new Ground();
         ground.setVisible(true);
-    }
+    }*/
+
+
+
+
 
 }

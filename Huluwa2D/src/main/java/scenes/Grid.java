@@ -1,14 +1,17 @@
 package scenes;
 
-import utility.Thing2D;
+import creatures.Creature;
 
 import java.awt.*;
 
 public class Grid {
     private int x,y;
     private  boolean occupied;
-    private Thing2D holder;
+    private Creature holder;
     private BattleField field;
+    private int offsetx = 100;
+    private int offsety = 150;
+    private int scale = 50;//
 
     public Grid() {
         this.x =0;
@@ -39,7 +42,7 @@ public class Grid {
 
     public int getY() { return y; }
 
-    public void setHolder(Thing2D holder) {
+    public void setHolder(Creature holder) {
         if (holder!=null) {
         this.holder = holder;
         this.setOccupied();}
@@ -50,16 +53,20 @@ public class Grid {
         this.cleanOccupied();
     }
 
-    public Thing2D getHolder() {
+    public Creature getHolder() {
         return holder;
     }
 
     public void drawGrid(Graphics g) {
-        g.drawRect(x*50,y*50,50,50);
+        g.setColor(new Color(255,255,255,125));
+        g.fillRect(x* scale + offsetx,y* scale + offsety, scale,scale);
         if (isOccupied()) {
-            System.out.println("high");
-            g.drawImage(holder.getImage(),x*50,y*50,50,50,field);
+            g.drawImage(holder.getImage(),x* scale + offsetx,y* scale + offsety, scale,scale,field);
         }
+    }
+
+    public void setField(BattleField field) {
+        this.field = field;
     }
 
     public boolean isNearBy(Grid grid){

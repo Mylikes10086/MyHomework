@@ -1,63 +1,60 @@
 package creatures;
 
 public class Monster extends Creature{
-    protected Name name;
 
     public Monster() {
         super();
-        this.name = Name.louluo;
-        this.inti_HP = 10;
-        this.current_HP = 10;
+        this.name = "蛤蟆精";
+        this.inti_HP = 12;
+        this.current_HP = 12;
         this.damage = 2;
         setImage("huluboys/louluo_a.png","huluboys/louluo_d.png");
     }
 
-    public Monster(Name name,int hp,int da) {
+    public Monster(String name,int hp,int da) {
         this.name = name;
         this.inti_HP = hp;
         this.current_HP = hp;
         this.damage = da;
-        setImage("huluboys/"+name+"_a.png","huluboys/"+name+"_d.png");
-    }
+        }
 
 
-    public int attack() {
-        return damage;
+    public void attack(Creature c) {
+        c.wounded(this.damage);
     }
 
     public void run() {
         try {
             while (!Thread.interrupted()) {//每次线程刷新都会运动
-                //move(-1,0);
-                if (this.isDead()) {
+                if (this.isDead()) {//
                     this.grid.setNull();
                     return;
                 }
                 //战斗已经结束
                 if(this.field.battleFinished()) return;
                 //寻找敌人
-                Creature creature = this.getCloestEnemy();
-                if (creature == this) return;
+                Creature enemy = this.getClosestEnemy();
+                if (enemy == this) return;
 
-                if(this.grid.isNearBy( creature.getGrid() ) ) {
+                if(this.grid.isNearBy( enemy.getGrid() ) ) {
                     synchronized (this) {
-                        if (creature.isDead()) continue;//该位置敌人已死
-                        synchronized (creature) {
-                            this.field.battleStart(this, creature);
-                            if(creature.isDead()){
-                                System.out.println(this.name.toString()+"killed");
+                        if (enemy.isDead()) continue;//该位置敌人已死
+                        synchronized (enemy) {
+                            this.field.battleStart(this, enemy);
+                            if(enemy.isDead()){
+                                System.out.println(this.name+" killed "+enemy.getName());
                             }
                             if (this.isDead()) {
                                 this.grid.setNull();
-                                System.out.println(this.name.toString()+"is killed"+ creature.current_HP);
+                                System.out.println(this.name+"is killed by"+enemy.getName());
                                 return;
                             } else {
-                                creature = this.getCloestEnemy();
+                                enemy = this.getClosestEnemy();
                             }
                         }
                     }
                 }
-                this.moveTo(creature.getGrid());
+                this.moveTo(enemy.getGrid());
                 System.out.println(this.getClass().getSimpleName()+"Moving");
                 Thread.sleep(1000);
                 this.field.repaint();
@@ -70,7 +67,3 @@ public class Monster extends Creature{
 
 
 }
-
-enum Name {
-        snake,xiezi,louluo;
-        }

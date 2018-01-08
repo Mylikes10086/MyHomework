@@ -7,14 +7,14 @@ import java.util.Random;
 public class Huluwa extends Creature{
     private SENIORITY seniority;
     private COLOUR colour;
-    private BattleField field;
-    private int speed = 80;
+    //private BattleField field;
+    //private int speed = 80;
 
     public Huluwa(int nseniority, BattleField field) {
         super(field);
         this.isWho(nseniority);
-        this.inti_HP = 3;
-        this.current_HP = 3;
+        this.inti_HP = 5;
+        this.current_HP = 5;
         this.damage = 5;
         setImage("huluboys/"+nseniority+"_a.png","huluboys/"+nseniority+"_d.png");
 
@@ -23,9 +23,9 @@ public class Huluwa extends Creature{
     public Huluwa() {super();}
 
     @Override
-    public int attack() {
+    public void attack(Creature c) {
         Random random = new Random();
-        return damage + random.nextInt(10);
+         c.wounded(damage + random.nextInt(5));
     }
 
     public void setXY(double x,double y) {//设置坐标
@@ -34,45 +34,6 @@ public class Huluwa extends Creature{
     }
 
     public void run() {//线程运行
-
-        /*try {
-            while (!Thread.interrupted()) {//每次线程刷新都会运动
-                if (this.isDead()) {
-                    this.grid.setNull();
-                    return;
-                }
-                //战斗已经结束
-                if(this.field.battleFinished()) return;
-                //寻找敌人
-                Creature creature = this.getCloestEnemy();
-                if (creature == this) return;
-
-                if(this.grid.isNearBy( creature.getGrid() ) ) {
-                    synchronized (this) {
-                        if (creature.isDead()) continue;//该位置敌人已死
-                        synchronized (creature) {
-                            this.field.battleStart(this, creature);
-                            if(creature.isDead()){
-                                System.out.println(this.seniority.name()+"killed");
-                            }
-                            if (this.isDead()) {
-                                this.grid.setNull();
-                                System.out.println(this.seniority.name()+"is killed"+ creature.current_HP);
-                                return;
-                            } else {
-                                creature = this.getCloestEnemy();
-                            }
-                        }
-                    }
-                }
-                this.moveTo(creature.getGrid());
-                System.out.println(this.getClass().toString()+"Moving");
-                Thread.sleep(1000);
-                this.field.repaint();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
         try {
             while (!Thread.interrupted()) {//每次线程刷新都会运动
                 //move(-1,0);
@@ -83,36 +44,35 @@ public class Huluwa extends Creature{
                 //战斗已经结束
                 if(this.field.battleFinished()) return;
                 //寻找敌人
-                Creature creature = this.getCloestEnemy();
-                if (creature == this) return;
+                Creature enemy = this.getClosestEnemy();
+                if (enemy == this) return;
 
-                if(this.grid.isNearBy( creature.getGrid() ) ) {
+                if(this.grid.isNearBy( enemy.getGrid() ) ) {
                     synchronized (this) {
-                        if (creature.isDead()) continue;//该位置敌人已死
-                        synchronized (creature) {
-                            this.field.battleStart(this, creature);
-                            if(creature.isDead()){
-                                System.out.println(this.seniority.toString()+"killed");
+                        if (enemy.isDead()) continue;//该位置敌人已死
+                        synchronized (enemy) {
+                            this.field.battleStart(this, enemy);
+                            if(enemy.isDead()){
+                                System.out.println(this.name+"killed"+enemy.getName());
                             }
                             if (this.isDead()) {
                                 this.grid.setNull();
-                                System.out.println(this.seniority.toString()+"is killed"+ creature.current_HP);
+                                System.out.println(this.name+" is killed by");
                                 return;
                             } else {
-                                creature = this.getCloestEnemy();
+                                enemy = this.getClosestEnemy();
                             }
                         }
                     }
                 }
-                this.moveTo(creature.getGrid());
-                System.out.println(this.getClass().toString()+"Moving");
+                this.moveTo(enemy.getGrid());
+                System.out.println(this.getClass().getSimpleName()+"Moving");
                 Thread.sleep(1000);
                 this.field.repaint();
             }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
 
     }
 
@@ -122,30 +82,37 @@ public class Huluwa extends Creature{
             case 1:
                 this.seniority = SENIORITY.ONE;
                 this.colour = COLOUR.RED;
+                this.name = "大娃";
                 break;
             case 2:
                 this.seniority = SENIORITY.TWO;
                 this.colour = COLOUR.ORANGE;
+                this.name = "二娃";
                 break;
             case 3:
                 this.seniority = SENIORITY.THREE;
                 this.colour = COLOUR.YELLOW;
+                this.name = "三娃";
                 break;
             case 4:
                 this.seniority = SENIORITY.FOUR;
                 this.colour = COLOUR.GREEN;
+                this.name = "四娃";
                 break;
             case 5:
                 this.seniority = SENIORITY.FIVE;
                 this.colour = COLOUR.BLUE;
+                this.name = "五娃";
                 break;
             case 6:
                 this.seniority = SENIORITY.SIX;
                 this.colour = COLOUR.INDIGO;
+                this.name = "六娃";
                 break;
             case 7:
                 this.seniority = SENIORITY.SEVEN;
                 this.colour = COLOUR.VIOLET;
+                this.name = "七娃";
                 break;
             default :
                 break;

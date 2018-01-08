@@ -10,7 +10,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public abstract class Creature extends Thing2D implements Moveable,Runnable,Serializable {
-    public static final int SPACE=80;
+
+    protected String name;
     protected Grid grid;
     protected BattleField field;
     protected transient Image image_alive;
@@ -54,7 +55,7 @@ public abstract class Creature extends Thing2D implements Moveable,Runnable,Seri
         }
     }
 
-    public abstract int attack();
+    public abstract void attack(Creature creature);
 
     public Image getImage() {
         if (this.isDead()){return image_dead;}
@@ -89,10 +90,10 @@ public abstract class Creature extends Thing2D implements Moveable,Runnable,Seri
         int nx = this.grid.getX()+x;
         int ny = this.grid.getY()+y;
         if(nx<0||ny<0) {
-            System.out.println("failed2");
+            System.out.println("failed1");
             return;}
         if(nx>field.getBoardWidth()||ny>field.getBoardHeight()) {
-            System.out.println("failed1");
+            System.out.println("failed2");
             return;}
         synchronized (grid) {
             if (field.getGrids()[nx][ny].isOccupied()) {
@@ -100,12 +101,12 @@ public abstract class Creature extends Thing2D implements Moveable,Runnable,Seri
                 return;}
             synchronized (field.getGrids()[nx][ny]) {
                 grid.setNull();
-                this.setGrid(field.getGrids()[nx + x][y+ny]);
+                this.setGrid(field.getGrids()[nx][ny]);
             }
         }
     }
 
-    public void moveTo(Grid grid1){
+    public void moveTo(Grid grid1){//向某个格子前进
         if (grid1.getX() > this.grid.getX()) {
             this.move(1, 0);
         } else if (grid1.getX() < this.grid.getX()) {
@@ -119,18 +120,21 @@ public abstract class Creature extends Thing2D implements Moveable,Runnable,Seri
         }
     }
 
-    public Creature getCloestEnemy() {
-        if(this instanceof Huluwa){
+    public Creature getClosestEnemy() {//寻找附近最近的敌人
+        if(this instanceof Huluwa || this instanceof Grandpa){
             Monster m = new Monster();
             m.setGrid(new Grid(100,100));
-            ArrayList<Creature> creatures = field.getCreatures();
-            for(Creature c : creatures){
+            int mx = m.getGrid().getX();
+            int my=  m.getGrid().getY();
+            ArrayList<Creature> others = field.getCreatures();
+            for(Creature c : others){
                 if(c instanceof Monster && !c.isDead()){
                     int cx = c.getGrid().getX();
                     int cy = c.getGrid().getY();
                     int nx = this.getGrid().getX();
                     int ny = this.getGrid().getY();
-                    if( Math.abs(cx-nx)+Math.abs(cy - ny) < Math.abs(m.getGrid().getX()-cx)+ Math.abs(m.getGrid().getY()-cy)){
+                    if( Math.abs(cx-nx)+Math.abs(cy - ny) < Math.abs(m.getGrid().getX()-nx)+ Math.abs(m.getGrid().getY()-ny)){
+
                         m = (Monster) c;
                     }
                 }
@@ -138,9 +142,11 @@ public abstract class Creature extends Thing2D implements Moveable,Runnable,Seri
             if(m.getGrid().getX() == 100) return this;//没有活着的敌人时，返回自身
             return m;
         }
-        else{
+        else if (this instanceof Monster){
             Creature h = new Huluwa(7,field);
             h.setGrid(new Grid(100,100));
+            int hx = h.getGrid().getX();
+            int hy=  h.getGrid().getY();
             ArrayList<Creature> creatures = field.getCreatures();
             for(Creature c : creatures){
                 int cx = c.getGrid().getX();
@@ -148,7 +154,7 @@ public abstract class Creature extends Thing2D implements Moveable,Runnable,Seri
                 int nx = this.getGrid().getX();
                 int ny = this.getGrid().getY();
                 if((c instanceof Huluwa|| c instanceof Grandpa) && !c.isDead()){
-                    if(Math.abs(cx-nx)+Math.abs(cy - ny) <= Math.abs(h.getGrid().getX()-cx)+ Math.abs(h.getGrid().getY()-cy) ){
+                    if(Math.abs(cx-nx)+Math.abs(cy - ny) <= Math.abs(hx-nx)+ Math.abs(hy-ny) ){
                         h = c;
                     }
                 }
@@ -156,6 +162,12 @@ public abstract class Creature extends Thing2D implements Moveable,Runnable,Seri
             if(h.getGrid().getX() == 100) return this;
             return h;
         }
+
+        else return this;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public Image getImage_alive() {

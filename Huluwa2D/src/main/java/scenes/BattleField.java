@@ -3,14 +3,12 @@ package scenes;
 import creatures.*;
 import utility.Formation;
 import utility.GameUtil;
-import utility.Thing2D;
 import utility.TooCrowdedException;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -45,9 +43,10 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
         for (int i=0;i<width;i++) {
             for(int j=0;j<height;j++) {
                 grids[i][j] = new Grid(i,j);
+                grids[i][j].setField(this);
             }
         }
-        //layoutCreature(louluo,new Grid(10,5));
+
     }
 
     public int getBoardWidth() {
@@ -59,10 +58,8 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
     }
 
     public synchronized void battleStart(Creature C1, Creature C2){//双方交战
-
-        C1.wounded(C2.attack());
-        C2.wounded(C1.attack());
-
+        C1.attack(C2);
+        C2.attack(C1);
     }
 
     public synchronized boolean battleFinished(){
@@ -75,10 +72,10 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
             else if(creature instanceof Monster && !creature.isDead()) {
                 M_count++;
             }
-            System.out.println("B_count"+B_count);
-            System.out.println("M_count"+M_count);
         }
-        if(B_count == 7 || M_count == 7) return true;
+        System.out.println("B_count"+B_count);
+        System.out.println("M_count"+M_count);
+        if(B_count == 0 || M_count == 0) return true;
         return false;
     }
 
@@ -100,15 +97,10 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
     public void drawField(Graphics g) {
 
         g.drawImage(GameUtil.getImage("bg.jpg"),0, 0,this.getWidth(),this.getHeight(),this);
-        //g.drawImage(battleground, 50, 50,battleground.getWidth(this),battleground.getHeight(this) , this);
-        /*for (int i=0;i<w;i++) {
+        for (int i=0;i<w;i++) {
             for(int j=0;j<h;j++) {
                 grids[i][j].drawGrid(g);
             }
-        }*/
-
-        for (Creature c:creatures) {
-            g.drawImage(c.getImage(),(int)c.x(),(int)c.y(),this);
         }
 
     }
@@ -120,10 +112,11 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
     }
 
 
-    public void restartLevel() {
-
-        //tiles.clear();
-        initField(15,10);
+    public void reload() {
+        //initField(15,10);
+        for (Creature c:creatures) {
+            c.reborn();
+        }
         if (completed) {
             completed = false;
         }
@@ -137,16 +130,7 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
         return formations;
     }
 
-    public Grid findAliveBoys() {
-        for(Creature creature:creatures){
-            if(creature instanceof Huluwa && !creature.isDead()){
-                return creature.getGrid();
-            }
-        }
-        return grids[0][0];
-    }
-
-    public void layoutCreature(Creature creature,Grid grid) throws TooCrowdedException{
+    public boolean layoutCreature(Creature creature,Grid grid) throws TooCrowdedException{
         if(this.alreadyLaid(creature)) {
             throw new TooCrowdedException("Already laid");
         }
@@ -161,10 +145,12 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
         creature.setGrid(grids[grid.getX()][grid.getY()]);
         creature.setField(this);
         this.creatures.add(creature);
+        return true;
     }
 
-    public void layoutFormation(Formation formation,Grid grid) throws TooCrowdedException {
+    public boolean layoutFormation(Formation formation,Grid grid) throws TooCrowdedException {
         if(this.alreadyLaid(formation)){
+
             throw new TooCrowdedException("Creatures or Formation Already Laid");
         }
         if(grid.getY() + formation.getHeight() > this.h ||
@@ -185,8 +171,8 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
             int ny = creature.getGrid().getY();
             this.layoutCreature(creature, new Grid(nx+grid.getX(),ny+grid.getY()) );
         }
-
         this.formations.add(formation);
+        return true;
     }
 
 
@@ -226,38 +212,42 @@ public class BattleField extends JPanel {//战场类，提供给葫芦娃大战�
     }
 
     class TAdapter extends KeyAdapter {
+
         @Override
         public void keyPressed(KeyEvent e) {
 
             if (completed) {
                 return;
             }
+
             int key = e.getKeyCode();
-
-            /*if (key == KeyEvent.VK_LEFT) {
-                huluwa.move(-SPACE, 0);
-
-            } else if (key == KeyEvent.VK_RIGHT) {
-                huluwa.move(SPACE, 0);
-
-            } else if (key == KeyEvent.VK_UP) {
-                huluwa.move(0, -SPACE);
-
-            } else if (key == KeyEvent.VK_DOWN) {
-                huluwa.move(0, SPACE);
-
-            } else */
             if (key == KeyEvent.VK_SPACE) {
+                //InitUI();
                 ExecutorService exec = Executors.newCachedThreadPool();
-                for (Creature c:creatures) {
-                    exec.execute(c);// Run for a while...
+                for (Creature creature : creatures) {
+                    exec.execute(creature);
                 }
+                /*java.util.Timer timer = new Timer();
+                timer.schedule(new TimerTask() {
+                    @Override
+                    public void run() {
+                        repaint();
+                    }
+
+                }, 0, 500);*/
+
+
+
 
             } else if (key == KeyEvent.VK_R) {
-                restartLevel();
+                reload();
+            } else if(key == KeyEvent.VK_P){
+
             }
 
             repaint();
         }
     }
+
+
 }
